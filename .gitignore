@@ -1,0 +1,12 @@
+# Python helpers (temp scripts)
+_write_app.py
+__pycache__/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.suo
+*.user
