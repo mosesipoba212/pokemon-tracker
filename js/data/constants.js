@@ -78,6 +78,14 @@ const TYPE_CHART = {
 
 const ALL_TYPES = Object.keys(TYPE_CHART);
 
+// Type Icon Mapping (type name to Gen 8 Sword/Shield badge number)
+const TYPE_ICON_MAP = {
+  normal: '1', fighting: '2', flying: '3', poison: '4',
+  ground: '5', rock: '6', bug: '7', ghost: '8', steel: '9',
+  fire: '10', water: '11', grass: '12', electric: '13',
+  psychic: '14', ice: '15', dragon: '16', dark: '17', fairy: '18'
+};
+
 /* Utility: capitalise a pokémon name for display */
 function cap(name) {
   return name.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());

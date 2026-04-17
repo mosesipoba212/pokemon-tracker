@@ -3,27 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pokémon Competitive Stat Tracker</title>
+  <title>PokéTracker — Competitive Battle Dashboard</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Import modern font */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+  </style>
 </head>
 <body>
-  <!-- ===== HEADER / SEARCH ===== -->
+  <!-- ===== HEADER ===== -->
   <header id="app-header">
     <div class="header-inner">
       <div class="logo">
-        <span class="pokeball-icon">⬤</span>
-        <h1>PokéTracker <span class="subtitle">Competitive</span></h1>
-      </div>
-      <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Search Pokémon (e.g. garchomp)…" autocomplete="off" spellcheck="false" />
-        <button id="search-btn">Search</button>
-        <div id="search-suggestions" class="suggestions-dropdown hidden"></div>
+        <img src="sprites/sprites/items/poke-ball.png" alt="Poké Ball" class="pokeball-icon" />
+        <h1>PokéTracker <span class="subtitle">Battle Dashboard</span></h1>
       </div>
       <div class="header-actions">
-        <button id="export-btn" title="Export team as JSON">⬇ Export</button>
-        <button id="save-btn" title="Save team to storage">💾 Save</button>
-        <button id="load-btn" title="Load saved team">📂 Load</button>
-        <button id="overlay-btn" title="Open PokéMMO battle overlay" onclick="window.open('overlay.html','pokeoverlay','width=360,height=700,resizable=yes,scrollbars=no')">🎮 Battle Overlay</button>
+        <button id="export-btn" class="poke-btn" title="Export team as JSON">
+          <img src="sprites/sprites/items/master-ball.png" class="btn-icon-img" alt="Export" />
+          <span class="btn-text">Export</span>
+        </button>
+        <button id="save-btn" class="poke-btn" title="Save team to storage">
+          <img src="sprites/sprites/items/ultra-ball.png" class="btn-icon-img" alt="Save" />
+          <span class="btn-text">Save</span>
+        </button>
+        <button id="load-btn" class="poke-btn" title="Load saved team">
+          <img src="sprites/sprites/items/premier-ball.png" class="btn-icon-img" alt="Load" />
+          <span class="btn-text">Load</span>
+        </button>
+        <button id="overlay-btn" class="poke-btn" title="Open battle overlay" onclick="window.open('overlay.html','pokeoverlay','width=360,height=700,resizable=yes,scrollbars=no')">
+          <img src="sprites/sprites/items/vs-recorder.png" class="btn-icon-img" alt="Overlay" />
+          <span class="btn-text">Overlay</span>
+        </button>
       </div>
     </div>
   </header>
@@ -35,17 +46,37 @@
     <section id="pokemon-panel" class="panel">
       <h2 class="panel-title">Pokémon Info</h2>
 
+      <!-- Search Bar -->
+      <div class="panel-search-row">
+        <input type="text" id="search-input" placeholder="Search Pokémon by name or number..." autocomplete="off" spellcheck="false" />
+        <button id="search-btn" class="poke-btn">
+          <img src="sprites/sprites/items/quick-ball.png" class="btn-icon-img" alt="Search" />
+          <span class="btn-text">Search</span>
+        </button>
+        <div id="search-suggestions" class="suggestions-dropdown hidden"></div>
+      </div>
+
       <div id="pokemon-card" class="pokemon-card hidden">
         <div class="card-header">
-          <img id="poke-sprite" src="" alt="" />
-          <div class="card-identity">
-            <h3 id="poke-name"></h3>
-            <div id="poke-types" class="type-badges"></div>
-            <div id="poke-abilities" class="abilities-list"></div>
+          <div class="card-sprite-col">
+            <img id="poke-sprite" src="" alt="" />
           </div>
-          <div class="card-meta">
-            <span id="poke-role" class="role-badge"></span>
-            <button id="add-to-team-btn" class="btn-primary">+ Add to Team</button>
+          <div class="card-info-col">
+            <h3 id="poke-name"></h3>
+            <div class="card-meta">
+              <span id="poke-role" class="role-badge"></span>
+              <button id="add-to-team-btn" class="btn-primary poke-capture-btn">
+                <img src="sprites/sprites/items/poke-ball.png" class="btn-icon-img capture-icon" alt="Capture" />
+                <span class="btn-text">Capture</span>
+              </button>
+            </div>
+            <div class="type-section">
+              <div id="poke-types" class="type-badges"></div>
+            </div>
+            <div class="abilities-section">
+              <h5 class="abilities-heading">Abilities</h5>
+              <div id="poke-abilities" class="abilities-list"></div>
+            </div>
           </div>
         </div>
 
@@ -53,6 +84,41 @@
         <div class="stat-block">
           <h4>Base Stats <span id="stat-total" class="stat-total"></span></h4>
           <div id="stat-bars"></div>
+        </div>
+
+        <!-- Held Items Recommendations -->
+        <div class="items-block">
+          <h4>Held Item Recommendations</h4>
+          <div id="item-recommendations" class="item-recs-grid">
+            <!-- Top 3 items generated by JS -->
+          </div>
+          <div id="current-item-display" class="current-item-display hidden">
+            <div class="current-item-header">Selected Item</div>
+            <div class="current-item-content">
+              <img id="current-item-img" src="" alt="" class="current-item-img" />
+              <div class="current-item-info">
+                <div id="current-item-name" class="current-item-name"></div>
+                <div id="current-item-effect" class="current-item-effect"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommended Moveset -->
+        <div class="moveset-block">
+          <h4>Recommended Moveset <span id="moveset-role-label" class="moveset-role-label"></span></h4>
+          <div id="moveset-main" class="moveset-main">
+            <!-- 4 main moves generated by JS -->
+          </div>
+          <div class="moveset-alternatives-toggle">
+            <button id="alternatives-toggle-btn" class="alternatives-toggle-btn">
+              <span class="toggle-arrow">▼</span>
+              <span class="toggle-text">Alternative Moves</span>
+            </button>
+          </div>
+          <div id="moveset-alternatives" class="moveset-alternatives hidden">
+            <!-- Alternative moves generated by JS -->
+          </div>
         </div>
 
         <!-- Nature / EV / IV Calculator -->
@@ -120,7 +186,10 @@
 
       <div class="compare-search-row">
         <input type="text" id="compare-input" placeholder="Compare with Pokémon…" autocomplete="off" spellcheck="false" />
-        <button id="compare-btn">Compare</button>
+        <button id="compare-btn" class="poke-btn">
+          <img src="sprites/sprites/items/vs-seeker.png" class="btn-icon-img" alt="Compare" />
+          <span class="btn-text">Compare</span>
+        </button>
         <div id="compare-suggestions" class="suggestions-dropdown hidden"></div>
       </div>
 
@@ -140,12 +209,30 @@
       <h2 class="panel-title">Team Builder <span id="team-count" class="count-badge">0/6</span></h2>
 
       <div id="team-slots">
-        <div class="team-slot empty" data-slot="0">Slot 1</div>
-        <div class="team-slot empty" data-slot="1">Slot 2</div>
-        <div class="team-slot empty" data-slot="2">Slot 3</div>
-        <div class="team-slot empty" data-slot="3">Slot 4</div>
-        <div class="team-slot empty" data-slot="4">Slot 5</div>
-        <div class="team-slot empty" data-slot="5">Slot 6</div>
+        <div class="team-slot empty" data-slot="0">
+          <img src="sprites/sprites/items/poke-ball.png" class="empty-pokeball" alt="Empty" />
+          <span class="empty-text">Empty Slot</span>
+        </div>
+        <div class="team-slot empty" data-slot="1">
+          <img src="sprites/sprites/items/poke-ball.png" class="empty-pokeball" alt="Empty" />
+          <span class="empty-text">Empty Slot</span>
+        </div>
+        <div class="team-slot empty" data-slot="2">
+          <img src="sprites/sprites/items/poke-ball.png" class="empty-pokeball" alt="Empty" />
+          <span class="empty-text">Empty Slot</span>
+        </div>
+        <div class="team-slot empty" data-slot="3">
+          <img src="sprites/sprites/items/poke-ball.png" class="empty-pokeball" alt="Empty" />
+          <span class="empty-text">Empty Slot</span>
+        </div>
+        <div class="team-slot empty" data-slot="4">
+          <img src="sprites/sprites/items/poke-ball.png" class="empty-pokeball" alt="Empty" />
+          <span class="empty-text">Empty Slot</span>
+        </div>
+        <div class="team-slot empty" data-slot="5">
+          <img src="sprites/sprites/items/poke-ball.png" class="empty-pokeball" alt="Empty" />
+          <span class="empty-text">Empty Slot</span>
+        </div>
       </div>
 
       <div id="team-stats" class="team-stats hidden">
@@ -203,12 +290,16 @@
     </div>
   </div>
 
-  <!-- Module load order: constants → typeChart → cache → API → pool → stats → matchup → recs → app -->
+  <!-- Module load order: constants → typeChart → cache → API → pool → items → stats → matchup → recs → app -->
   <script src="js/data/constants.js"></script>
   <script src="js/calc/typeChart.js"></script>
   <script src="js/data/cache.js"></script>
   <script src="js/data/pokeapi.js"></script>
   <script src="js/data/pool.js"></script>
+  <script src="js/data/items.js"></script>
+  <script src="js/data/moves.js"></script>
+  <script src="js/calc/items.js"></script>
+  <script src="js/calc/movesets.js"></script>
   <script src="js/calc/stats.js"></script>
   <script src="js/calc/matchup.js"></script>
   <script src="js/calc/recommendations.js"></script>

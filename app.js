@@ -30,10 +30,29 @@ function spriteHtml(poke, className = '', useLarge = false) {
 }
 
 function makeTypeBadge(type, small = false) {
-  const el = document.createElement('span');
-  el.className = `type-badge type-${type}${small ? ' type-sm' : ''}`;
-  el.textContent = type;
+  const el = document.createElement('img');
+  const typeId = TYPE_ICON_MAP[type.toLowerCase()];
+  el.src = `sprites/sprites/types/generation-viii/sword-shield/${typeId}.png`;
+  el.alt = type;
+  el.className = `type-badge-img${small ? ' type-badge-sm' : ''}`;
+  el.onerror = function() {
+    // Fallback to styled text badge if image fails
+    const span = document.createElement('span');
+    span.className = `type-badge type-${type}${small ? ' type-sm' : ''}`;
+    span.textContent = type;
+    this.replaceWith(span);
+  };
   return el;
+}
+
+// Helper for inline type badge HTML
+function typeBadgeHtml(type, small = false) {
+  const typeId = TYPE_ICON_MAP[type.toLowerCase()];
+  const sizeClass = small ? ' type-badge-sm' : '';
+  return `<img src="sprites/sprites/types/generation-viii/sword-shield/${typeId}.png" 
+    alt="${type}" 
+    class="type-badge-img${sizeClass}" 
+    onerror="this.outerHTML='<span class=\'type-badge type-${type}${small ? ' type-sm' : ''}\'>${type}</span>'" />`;
 }
 
 /* =========================================================
@@ -60,6 +79,190 @@ function renderStatBars(pokemon) {
     container.appendChild(row);
   });
 }
+
+/* =========================================================
+   3A. ITEM RECOMMENDATIONS
+   ========================================================= */
+function renderItemRecommendations(pokemon) {
+  const container = document.getElementById('item-recommendations');
+  container.innerHTML = '';
+
+  // Get top 3 recommendations
+  const context = {
+    hasEvolution: pokemon.hasEvolution,
+    hazardThreat: isHazardWeak(pokemon.types),
+    team: state.team.filter(p => p !== null)
+  };
+  
+  const recommendations = getItemRecommendations(pokemon, context).slice(0, 3);
+
+  recommendations.forEach((rec, index) => {
+    const card = document.createElement('div');
+    card.className = 'item-rec-card';
+    if (state.currentPokemon?.selectedItem === rec.id) {
+      card.classList.add('selected');
+    }
+
+    const imgSrc = rec.item.image || ITEM_SPRITE_FALLBACK;
+    const mainReason = rec.reasons[0] || rec.item.description;
+
+    card.innerHTML = `
+      <div class="item-rec-header">
+        <img src="${imgSrc}" alt="${rec.item.name}" class="item-rec-img" 
+             onerror="this.src='${ITEM_SPRITE_FALLBACK}';" />
+        <div class="item-rec-name">${rec.item.name}</div>
+      </div>
+      <div class="item-rec-badge ${rec.badge.class}">${rec.badge.text}</div>
+      <div class="item-rec-effect">${rec.item.effect}</div>
+      <div class="item-rec-reason">${mainReason}</div>
+    `;
+
+    card.addEventListener('click', () => selectItem(pokemon, rec.id));
+    container.appendChild(card);
+  });
+
+  // Update current item display if one is selected
+  if (state.currentPokemon?.selectedItem) {
+    updateCurrentItemDisplay(state.currentPokemon.selectedItem);
+  } else {
+    document.getElementById('current-item-display').classList.add('hidden');
+  }
+}
+
+function selectItem(pokemon, itemId) {
+  if (!state.currentPokemon) return;
+  
+  state.currentPokemon.selectedItem = itemId;
+  updateCurrentItemDisplay(itemId);
+  renderItemRecommendations(pokemon); // Re-render to show selected state
+  renderMoveset(pokemon); // Update moveset based on selected item
+}
+
+function updateCurrentItemDisplay(itemId) {
+  const item = ITEMS[itemId];
+  if (!item) {
+    document.getElementById('current-item-display').classList.add('hidden');
+    return;
+  }
+
+  const display = document.getElementById('current-item-display');
+  display.classList.remove('hidden');
+
+  const imgSrc = item.image || ITEM_SPRITE_FALLBACK;
+  document.getElementById('current-item-img').src = imgSrc;
+  document.getElementById('current-item-img').alt = item.name;
+  document.getElementById('current-item-name').textContent = item.name;
+  document.getElementById('current-item-effect').textContent = item.description;
+}
+
+/* =========================================================
+   3B. MOVESET RECOMMENDATIONS
+   ========================================================= */
+function renderMoveset(pokemon) {
+  const context = {
+    item: state.currentPokemon?.selectedItem,
+    team: state.team.filter(p => p !== null),
+    opponent: state.opponentPokemon
+  };
+
+  const moveset = getRecommendedMoveset(pokemon, context);
+  
+  // Render role label
+  const roleLabel = getMovesetRoleLabel(moveset.role, context.item);
+  document.getElementById('moveset-role-label').textContent = roleLabel;
+
+  // Render main moves
+  const mainContainer = document.getElementById('moveset-main');
+  mainContainer.innerHTML = '';
+  
+  moveset.mainMoves.forEach((move, index) => {
+    const card = document.createElement('div');
+    card.className = 'move-card';
+    
+    // Check if super effective vs opponent
+    if (context.opponent && isEffectiveVsOpponent(move, context.opponent)) {
+      card.classList.add('super-effective');
+    }
+
+    const powerDisplay = move.power > 0 ? move.power : '—';
+    const categoryIconPath = getCategoryIcon(move.category);
+
+    card.innerHTML = `
+      <div class="move-slot">${index + 1}</div>
+      <div class="move-icons">
+        ${typeBadgeHtml(move.type, true)}
+        <img src="${categoryIconPath}" class="move-category-icon ${move.category}" alt="${move.category}" />
+      </div>
+      <div class="move-info">
+        <div class="move-name">${move.name}</div>
+        <div class="move-reason">${move.reason}</div>
+      </div>
+      <div class="move-power">${powerDisplay}</div>
+    `;
+
+    mainContainer.appendChild(card);
+  });
+
+  // Render alternative moves
+  const altContainer = document.getElementById('moveset-alternatives');
+  altContainer.innerHTML = '';
+  
+  moveset.alternatives.forEach((move) => {
+    const card = document.createElement('div');
+    card.className = 'alt-move-card';
+
+    card.innerHTML = `
+      <div class="alt-move-name">${move.name}</div>
+      <div class="alt-move-meta">
+        ${typeBadgeHtml(move.type, true)}
+        <div class="alt-move-category">${move.category.slice(0, 3).toUpperCase()}</div>
+      </div>
+      <div class="alt-move-reason">${move.reason}</div>
+    `;
+
+    altContainer.appendChild(card);
+  });
+}
+
+function getCategoryIcon(category) {
+  if (category === 'physical') return 'sprites/sprites/items/red-shard.png';
+  if (category === 'special') return 'sprites/sprites/items/blue-shard.png';
+  if (category === 'status') return 'sprites/sprites/items/green-shard.png';
+  return 'sprites/sprites/items/green-shard.png';
+}
+
+function getTypeColor(type) {
+  const colors = {
+    normal: 'background: linear-gradient(135deg, #a8a878, #8a8a5f)',
+    fire: 'background: linear-gradient(135deg, #f08030, #dd6610)',
+    water: 'background: linear-gradient(135deg, #6890f0, #386ceb)',
+    grass: 'background: linear-gradient(135deg, #78c850, #5ca935)',
+    electric: 'background: linear-gradient(135deg, #f8d030, #f0c108)',
+    ice: 'background: linear-gradient(135deg, #98d8d8, #69c6c6)',
+    fighting: 'background: linear-gradient(135deg, #c03028, #9d2721)',
+    poison: 'background: linear-gradient(135deg, #a040a0, #803380)',
+    ground: 'background: linear-gradient(135deg, #e0c068, #d4a82f)',
+    flying: 'background: linear-gradient(135deg, #a890f0, #9180c4)',
+    psychic: 'background: linear-gradient(135deg, #f85888, #f61c5d)',
+    bug: 'background: linear-gradient(135deg, #a8b820, #8d9a1b)',
+    rock: 'background: linear-gradient(135deg, #b8a038, #93802d)',
+    ghost: 'background: linear-gradient(135deg, #705898, #554374)',
+    dragon: 'background: linear-gradient(135deg, #7038f8, #4c08ef)',
+    dark: 'background: linear-gradient(135deg, #705848, #513f34)',
+    steel: 'background: linear-gradient(135deg, #b8b8d0, #9797ba)',
+    fairy: 'background: linear-gradient(135deg, #ee99ac, #ec6d9c)'
+  };
+  return colors[type] || 'background: #777';
+}
+
+// Toggle alternatives visibility
+document.getElementById('alternatives-toggle-btn')?.addEventListener('click', function() {
+  const altSection = document.getElementById('moveset-alternatives');
+  const btn = this;
+  
+  altSection.classList.toggle('hidden');
+  btn.classList.toggle('active');
+});
 
 /* =========================================================
    4. POKEMON CARD
@@ -91,7 +294,7 @@ function renderPokemonCard(pokemon) {
   abilitiesEl.innerHTML = '';
   getAbilitySuggestions(pokemon.abilities, detectRole(pokemon.stats)).forEach(a => {
     const el = document.createElement('div');
-    el.className = 'ability-tag';
+    el.className = a.hidden ? 'ability-tag hidden-ability' : 'ability-tag';
     el.title = a.tip;
     el.innerHTML = `<span class="${a.hidden ? 'ability-hidden' : 'ability-name'}">${
       a.name.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
@@ -101,6 +304,8 @@ function renderPokemonCard(pokemon) {
 
   document.getElementById('poke-role').textContent = detectRole(pokemon.stats);
   renderStatBars(pokemon);
+  renderItemRecommendations(pokemon);
+  renderMoveset(pokemon);
   buildEVIVInputs(pokemon);
   renderSpeedTiers(pokemon);
 }
@@ -205,7 +410,7 @@ function renderSpeedComparison() {
     <div class="matchup-poke-col">
       ${spriteHtml(a, 'matchup-sprite')}
       <div class="matchup-name">${cap(a.name)}</div>
-      <div class="type-badges" style="justify-content:center">${a.types.map(t => `<span class="type-badge type-${t}">${t}</span>`).join('')}</div>
+      <div class="type-badges" style="justify-content:center">${a.types.map(t => typeBadgeHtml(t)).join('')}</div>
       <div class="matchup-bst">BST ${a.stats.total}</div>
     </div>
     <div class="matchup-vs-col">
@@ -215,7 +420,7 @@ function renderSpeedComparison() {
     <div class="matchup-poke-col">
       ${spriteHtml(b, 'matchup-sprite')}
       <div class="matchup-name">${cap(b.name)}</div>
-      <div class="type-badges" style="justify-content:center">${b.types.map(t => `<span class="type-badge type-${t}">${t}</span>`).join('')}</div>
+      <div class="type-badges" style="justify-content:center">${b.types.map(t => typeBadgeHtml(t)).join('')}</div>
       <div class="matchup-bst">BST ${b.stats.total}</div>
     </div>`;
   container.appendChild(headerEl);
@@ -302,7 +507,20 @@ function addToTeam(pokemon) {
   if (state.team.some(p => p && p.name === pokemon.name)) {
     showNotification(`${cap(pokemon.name)} is already in your team.`, 'warn'); return;
   }
-  state.team[slot] = pokemon;
+  
+  // Preserve selected item and other metadata
+  const teamPokemon = { ...pokemon };
+  if (pokemon.selectedItem) {
+    teamPokemon.selectedItem = pokemon.selectedItem;
+  } else {
+    // Auto-select best item if none chosen
+    const bestItem = getBestItem(pokemon, { team: state.team });
+    if (bestItem) {
+      teamPokemon.selectedItem = bestItem.id;
+    }
+  }
+  
+  state.team[slot] = teamPokemon;
   _refreshTeam();
   showNotification(`${cap(pokemon.name)} added to slot ${slot + 1}!`, 'info');
 }
@@ -318,7 +536,7 @@ function syncTeamToStorage() {
   try {
     localStorage.setItem('poke_overlay_team', JSON.stringify(
       state.team.map(p => p ? { name:p.name, id:p.id, types:p.types, stats:p.stats,
-        sprite:p.sprite, spriteFallback:p.spriteFallback } : null)
+        sprite:p.sprite, spriteFallback:p.spriteFallback, selectedItem:p.selectedItem } : null)
     ));
   } catch (_) {}
 }
@@ -326,26 +544,98 @@ function syncTeamToStorage() {
 /* =========================================================
    10. TEAM SLOTS RENDERING
    ========================================================= */
+let selectedTeamSlot = null;
+
 function renderTeamSlots() {
   const slots = document.querySelectorAll('.team-slot');
   document.getElementById('team-count').textContent = `${state.team.filter(Boolean).length}/6`;
   slots.forEach((slotEl, i) => {
     const poke = state.team[i];
-    if (!poke) { slotEl.className = 'team-slot empty'; slotEl.innerHTML = `Slot ${i + 1}`; return; }
-    slotEl.className = 'team-slot filled';
+    if (!poke) { 
+      slotEl.className = 'team-slot empty'; 
+      slotEl.innerHTML = `
+        <img src="sprites/sprites/items/poke-ball.png" class="empty-pokeball" alt="Empty" />
+        <span class="empty-text">Empty Slot</span>`; 
+      slotEl.style.cursor = 'default';
+      slotEl.onclick = null;
+      return; 
+    }
+    
+    const isSelected = selectedTeamSlot === i;
+    slotEl.className = `team-slot filled${isSelected ? ' selected' : ''}`;
+    slotEl.style.cursor = 'pointer';
+    
+    // Build item display if present
+    let itemHtml = '';
+    if (poke.selectedItem) {
+      const item = ITEMS[poke.selectedItem];
+      if (item) {
+        const itemImgSrc = item.image || ITEM_SPRITE_FALLBACK;
+        const itemReason = getItemRecommendations(poke, { team: state.team })[0]?.reasons[0] || 'Competitive item';
+        const shortReason = itemReason.length > 35 ? itemReason.substring(0, 35) + '...' : itemReason;
+        itemHtml = `
+          <div class="slot-item-row" title="${item.name}${itemReason ? ' — ' + itemReason : ''}">
+            <img src="${itemImgSrc}" alt="${item.name}" class="slot-item-icon" 
+                 onerror="this.src='${ITEM_SPRITE_FALLBACK}';" />
+            <span class="slot-item-name">${item.name}</span>
+            <span class="slot-item-reason">${shortReason}</span>
+          </div>`;
+      }
+    }
+    
+    const hintText = isSelected ? 'Selected' : 'Click to view';
+    
     slotEl.innerHTML = `
-      ${spriteHtml(poke, 'slot-sprite')}
-      <div class="slot-info">
-        <div class="slot-name">${poke.name.replace(/-/g, ' ')}</div>
-        <div class="slot-types">${poke.types.map(t =>
-          `<span class="type-badge type-${t}" style="font-size:0.68rem;padding:0.1rem 0.4rem">${t}</span>`
-        ).join('')}</div>
+      <div class="slot-sprite-col">
+        ${spriteHtml(poke, 'slot-sprite')}
       </div>
-      <button class="slot-remove" data-slot="${i}" title="Remove">✕</button>`;
+      <div class="slot-content-col">
+        <div class="slot-name">${poke.name.replace(/-/g, ' ')}</div>
+        <div class="slot-types">${poke.types.map(t => typeBadgeHtml(t, true)).join('')}</div>
+        ${itemHtml}
+      </div>
+      <div class="slot-actions-col">
+        <button class="slot-remove" data-slot="${i}" title="Remove">✕</button>
+      </div>
+      <div class="slot-hint">${hintText}</div>`;
+    
+    // Add click handler for team slot selection
+    slotEl.onclick = (e) => {
+      // Don't trigger if clicking the remove button
+      if (e.target.classList.contains('slot-remove')) return;
+      handleTeamSlotClick(i, poke);
+    };
   });
+  
   document.querySelectorAll('.slot-remove').forEach(btn => {
     btn.addEventListener('click', e => { e.stopPropagation(); removeFromTeam(+btn.dataset.slot); });
   });
+}
+
+function handleTeamSlotClick(slotIndex, pokemon) {
+  // Always load clicked Pokémon into left panel (Pokémon Info)
+  // This allows inspecting team members without affecting the matchup comparison target
+  
+  // Update selected state
+  updateTeamSlotSelection(slotIndex);
+  
+  // Load into left panel
+  searchPokemon(pokemon.name);
+  showNotification(`Loaded ${pokemon.name.replace(/-/g, ' ')} into Pokémon Info`, 'info');
+  
+  // Note: If a comparison Pokémon is already set, the matchup will automatically
+  // refresh with the new left Pokémon vs the existing comparison Pokémon.
+  // The comparison Pokémon remains unchanged unless manually updated via compare controls.
+}
+
+function updateTeamSlotSelection(slotIndex) {
+  selectedTeamSlot = slotIndex;
+  renderTeamSlots(); // Re-render to update selected state and hint text
+}
+
+function clearTeamSlotSelection() {
+  selectedTeamSlot = null;
+  renderTeamSlots(); // Re-render to clear selected state
 }
 
 /* =========================================================
@@ -386,16 +676,19 @@ function renderTeamRecommendations() {
     const local  = `sprites/sprites/pokemon/${candidate.id}.png`;
     const cdn    = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${candidate.id}.png`;
     const inTeam = state.team.some(p => p && p.name === candidate.name);
+    const reasonText = reasons.map(r => r.text).join(', ');
     card.innerHTML = `
-      <img src="${local}" alt="${candidate.name}" onerror="this.onerror=null;this.src='${cdn}'" />
-      <div class="rec-info">
-        <div class="rec-name">${candidate.name.replace(/-/g, ' ')}</div>
-        <div class="rec-types">${candidate.types.map(t =>
-          `<span class="type-badge type-${t}" style="font-size:0.68rem;padding:0.1rem 0.4rem">${t}</span>`
-        ).join('')}</div>
-        <div class="rec-reason">${reasons.map(r => `<span class="${r.cls}">${r.text}</span>`).join('')}</div>
+      <div class="rec-sprite-col">
+        <img src="${local}" alt="${candidate.name}" onerror="this.onerror=null;this.src='${cdn}'" />
       </div>
-      <button class="rec-add-btn" ${inTeam ? 'disabled' : ''}>${inTeam ? '✓ In Team' : '+ Search'}</button>
+      <div class="rec-content-col">
+        <div class="rec-name">${candidate.name.replace(/-/g, ' ')}</div>
+        <div class="rec-types">${candidate.types.map(t => typeBadgeHtml(t, true)).join('')}</div>
+        <div class="rec-reason" title="${reasonText}">${reasons.map(r => `<span class="${r.cls}">${r.text}</span>`).join('')}</div>
+      </div>
+      <div class="rec-btn-col">
+        <button class="rec-add-btn" ${inTeam ? 'disabled' : ''}>${inTeam ? '✓ In Team' : '+ Search'}</button>
+      </div>
       <div class="rec-score-bar" style="transform:scaleX(${Math.round(score/topScore*100)/100})"></div>`;
     card.querySelector('.rec-add-btn').addEventListener('click', e => {
       e.stopPropagation();
@@ -469,6 +762,19 @@ function renderTeamStats() {
   if (!roles.some(r => r.includes('Sweeper'))) addInfo(warnings, '💡 No sweeper — consider a fast offensive Pokémon.');
   if (!roles.some(r => r==='Wall'||r==='Tank')) addInfo(warnings, '💡 No wall/tank — team may struggle with stall.');
   if (!roles.some(r => r==='Support'))          addInfo(warnings, '💡 No support — consider Stealth Rock / Tailwind user.');
+  
+  // Item-based warnings
+  const itemAnalysis = analyzeTeamItems(members);
+  itemAnalysis.warnings.forEach(warn => {
+    if (warn.severity === 'high') {
+      const w = document.createElement('div');
+      w.className = 'warning-tag';
+      w.innerHTML = `<span class="warn-icon">⚠</span> ${warn.message}`;
+      warnings.appendChild(w);
+    } else if (warn.severity === 'medium') {
+      addInfo(warnings, `💡 ${warn.message}`);
+    }
+  });
 }
 
 function addInfo(container, msg) {
@@ -508,7 +814,7 @@ function renderWeaknessChart() {
     cell.className = `weakness-cell ${cls}`;
     cell.title = `${vulCount}/${members.length} members weak to ${atk}`;
     cell.innerHTML = `
-      <span class="type-badge type-${atk} wk-type">${atk}</span>
+      ${typeBadgeHtml(atk)}
       <span class="wk-mult">${label}</span>
       <span style="font-size:0.7rem;opacity:0.7">${vulCount}/${members.length}</span>`;
     container.appendChild(cell);
@@ -623,7 +929,13 @@ async function searchCompare(name) {
   if (!name) return;
   try {
     state.comparePokemon = await fetchPokemon(name);
-    renderSpeedComparison(); renderTeamSpeedRankings();
+    state.opponentPokemon = state.comparePokemon; // Store as opponent for moveset
+    renderSpeedComparison(); 
+    renderTeamSpeedRankings();
+    // Re-render moveset if a Pokemon is currently displayed
+    if (state.currentPokemon) {
+      renderMoveset(state.currentPokemon);
+    }
   } catch (err) { showNotification(err.message, 'error'); }
 }
 
@@ -753,8 +1065,28 @@ function escapeHTML(str) {
 function bindEvents() {
   document.getElementById('search-btn').addEventListener('click', () =>
     searchPokemon(document.getElementById('search-input').value.trim().toLowerCase()));
-  document.getElementById('compare-btn').addEventListener('click', () =>
-    searchCompare(document.getElementById('compare-input').value.trim().toLowerCase()));
+  
+  const compareInput = document.getElementById('compare-input');
+  document.getElementById('compare-btn').addEventListener('click', () => {
+    clearTeamSlotSelection(); // Clear team selection when manually comparing
+    searchCompare(compareInput.value.trim().toLowerCase());
+  });
+  
+  // Handle Enter key in compare input
+  compareInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      clearTeamSlotSelection();
+      searchCompare(compareInput.value.trim().toLowerCase());
+    }
+  });
+  
+  // Handle Enter key in search input
+  document.getElementById('search-input').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      searchPokemon(document.getElementById('search-input').value.trim().toLowerCase());
+    }
+  });
+  
   document.getElementById('add-to-team-btn').addEventListener('click', () => {
     if (state.currentPokemon) addToTeam(state.currentPokemon);
   });
@@ -788,7 +1120,10 @@ async function init() {
   initTypeCalc();
   initRecFilters();
   initAutocomplete('search-input',  'search-suggestions', name => searchPokemon(name));
-  initAutocomplete('compare-input', 'compare-suggestions', name => searchCompare(name));
+  initAutocomplete('compare-input', 'compare-suggestions', name => {
+    clearTeamSlotSelection(); // Clear selection when using autocomplete
+    searchCompare(name);
+  });
   renderTeamSlots();
   loadPokemonList().catch(() => {});
   prefetchTopPool();
