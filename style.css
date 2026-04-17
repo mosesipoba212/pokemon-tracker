@@ -3113,17 +3113,18 @@ button {
 .rec-card {
   display: grid;
   grid-template-columns: 76px 1fr 100px;
-  align-items: center;
+  align-items: start;
   gap: 1.2rem;
   background: rgba(30, 35, 55, 0.4);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-sm);
-  padding: 1rem 1.2rem;
+  padding: 1rem 1.2rem 1.2rem 1.2rem;
   min-height: 100px;
+  height: auto;
   cursor: pointer;
   transition: all var(--transition);
   position: relative;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .rec-card::before {
@@ -3151,12 +3152,13 @@ button {
 
 .rec-sprite-col {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   width: 100%;
   height: 68px;
   flex-shrink: 0;
   padding: 4px;
+  padding-top: 0.2rem;
 }
 
 .rec-sprite-col img {
@@ -3180,8 +3182,10 @@ button {
   gap: 0.4rem;
   min-width: 0;
   flex: 1;
-  justify-content: center;
-  padding: 0.3rem 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 0.2rem 0;
+  width: 100%;
 }
 
 .rec-name {
@@ -3193,6 +3197,8 @@ button {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: 100%;
+  max-width: 100%;
 }
 
 .rec-types { 
@@ -3200,6 +3206,7 @@ button {
   gap: 0.4rem;
   flex-wrap: wrap;
   align-items: center;
+  width: 100%;
 }
 
 .rec-reason {
@@ -3207,9 +3214,12 @@ button {
   color: var(--text-dim);
   line-height: 1.3;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin-top: 0.05rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+  width: 100%;
+  max-width: 100%;
 }
 
 .rec-reason span {
@@ -3227,10 +3237,11 @@ button {
 
 .rec-btn-col {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   flex-shrink: 0;
   width: 100%;
+  padding-top: 0.2rem;
 }
 
 .rec-reason span.tag-coverage { 
@@ -3522,7 +3533,7 @@ button {
   /* Recommendation card adjustments for medium screens */
   .rec-card {
     grid-template-columns: 72px 1fr 96px;
-    padding: 0.95rem 1.1rem;
+    padding: 0.95rem 1.1rem 1.1rem 1.1rem;
   }
   
   .rec-sprite-col {
@@ -3649,7 +3660,7 @@ button {
   .rec-card {
     grid-template-columns: 64px 1fr 88px;
     gap: 0.9rem;
-    padding: 0.8rem 1rem;
+    padding: 0.8rem 1rem 1rem 1rem;
     min-height: 88px;
   }
   
@@ -3668,8 +3679,13 @@ button {
     font-size: 0.85rem;
   }
   
+  .rec-content-col {
+    gap: 0.35rem;
+  }
+  
   .rec-reason {
-    gap: 0.25rem;
+    gap: 0.3rem;
+    margin-top: 0.1rem;
   }
   
   .rec-reason span {
