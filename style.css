@@ -3756,3 +3756,103 @@ body {
   background: rgba(88, 166, 255, 0.3);
   color: var(--text-primary);
 }
+
+/* =========================================================
+   DEBUG SECTION — Deployment Image Testing
+   ========================================================= */
+.debug-section {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem 0;
+  backdrop-filter: blur(10px);
+}
+
+.debug-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.debug-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.debug-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.debug-card h3 {
+  font-size: 0.85rem;
+  color: var(--poke-yellow);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.debug-images {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.debug-images img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.debug-images img:hover {
+  border-color: var(--poke-yellow);
+  transform: scale(1.2);
+}
+
+.debug-bg-test {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.debug-bg-test .empty-pokeball {
+  width: 40px;
+  height: 40px;
+  background-size: contain;
+}
+
+.debug-bg-test p {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.debug-stats {
+  background: var(--bg-deep);
+  border: 1px solid var(--border-glow);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.debug-stats h3 {
+  color: var(--neon-cyan);
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.debug-stats button {
+  margin: 0.25rem;
+}
+

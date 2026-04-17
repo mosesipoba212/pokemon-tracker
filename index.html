@@ -263,6 +263,85 @@
       </div>
     </section>
 
+    <!-- ===== DEBUG SECTION: Deployment Image Testing ===== -->
+    <!-- This section helps verify all image types load correctly on Vercel -->
+    <!-- Remove or hide this section in production -->
+    <section id="debug-section" class="debug-section" style="display: none;">
+      <div class="section-inner">
+        <h2>🧪 Image Deployment Test</h2>
+        <p class="debug-subtitle">Verifying all asset paths work in production</p>
+        
+        <div class="debug-grid">
+          <!-- Header Icon Test -->
+          <div class="debug-card">
+            <h3>Header Icons</h3>
+            <div class="debug-images">
+              <img src="/sprites/sprites/items/poke-ball.png" alt="Poké Ball" title="Logo icon" />
+              <img src="/sprites/sprites/items/master-ball.png" alt="Master Ball" title="Export button" />
+              <img src="/sprites/sprites/items/ultra-ball.png" alt="Ultra Ball" title="Save button" />
+            </div>
+          </div>
+          
+          <!-- Type Badges Test -->
+          <div class="debug-card">
+            <h3>Type Icons</h3>
+            <div class="debug-images">
+              <img src="/sprites/sprites/types/generation-viii/sword-shield/1.png" alt="Normal" title="Normal type" />
+              <img src="/sprites/sprites/types/generation-viii/sword-shield/10.png" alt="Fire" title="Fire type" />
+              <img src="/sprites/sprites/types/generation-viii/sword-shield/11.png" alt="Water" title="Water type" />
+              <img src="/sprites/sprites/types/generation-viii/sword-shield/13.png" alt="Electric" title="Electric type" />
+            </div>
+          </div>
+          
+          <!-- Item Icons Test -->
+          <div class="debug-card">
+            <h3>Item Icons</h3>
+            <div class="debug-images">
+              <img src="/sprites/sprites/items/choice-scarf.png" alt="Choice Scarf" title="Choice Scarf" />
+              <img src="/sprites/sprites/items/life-orb.png" alt="Life Orb" title="Life Orb" />
+              <img src="/sprites/sprites/items/leftovers.png" alt="Leftovers" title="Leftovers" />
+            </div>
+          </div>
+          
+          <!-- Pokemon Sprites Test -->
+          <div class="debug-card">
+            <h3>Pokémon Sprites</h3>
+            <div class="debug-images">
+              <img src="/sprites/sprites/pokemon/25.png" alt="Pikachu" title="Pikachu sprite" />
+              <img src="/sprites/sprites/pokemon/6.png" alt="Charizard" title="Charizard sprite" />
+              <img src="/sprites/sprites/pokemon/150.png" alt="Mewtwo" title="Mewtwo sprite" />
+            </div>
+          </div>
+          
+          <!-- Move Category Icons Test -->
+          <div class="debug-card">
+            <h3>Move Category Icons</h3>
+            <div class="debug-images">
+              <img src="/sprites/sprites/items/red-shard.png" alt="Physical" title="Physical moves" />
+              <img src="/sprites/sprites/items/blue-shard.png" alt="Special" title="Special moves" />
+              <img src="/sprites/sprites/items/green-shard.png" alt="Status" title="Status moves" />
+            </div>
+          </div>
+          
+          <!-- CSS Background Test -->
+          <div class="debug-card">
+            <h3>CSS Backgrounds</h3>
+            <div class="debug-bg-test">
+              <div class="empty-pokeball" title="CSS background test"></div>
+              <p>Empty slot icon (CSS)</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="debug-stats" id="debug-stats">
+          <h3>Load Statistics</h3>
+          <button onclick="logImageStats()" class="poke-btn">Show Full Stats in Console</button>
+          <button onclick="enableAssetDebug()" class="poke-btn">Enable Debug Logging</button>
+          <button onclick="document.getElementById('debug-section').style.display='none'" class="poke-btn">Hide Test Section</button>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <!-- ===== FOOTER: TYPE EFFECTIVENESS CALCULATOR ===== -->
@@ -290,7 +369,8 @@
     </div>
   </div>
 
-  <!-- Module load order: constants → typeChart → cache → API → pool → items → stats → matchup → recs → app -->
+  <!-- Module load order: utilities → constants → typeChart → cache → API → pool → items → stats → matchup → recs → app -->
+  <script src="js/utils/assets.js"></script>
   <script src="js/data/constants.js"></script>
   <script src="js/calc/typeChart.js"></script>
   <script src="js/data/cache.js"></script>
@@ -304,5 +384,24 @@
   <script src="js/calc/matchup.js"></script>
   <script src="js/calc/recommendations.js"></script>
   <script src="app.js"></script>
+  
+  <!-- Debug utilities: Enable with enableAssetDebug() in console -->
+  <script>
+    // Auto-enable debug mode in development
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      console.log('🔧 Development mode detected - asset debugging available');
+      console.log('Run enableAssetDebug() to see detailed image loading logs');
+    }
+    
+    // Log final image stats after page load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        if (typeof logImageStats === 'function') {
+          console.log('📊 Final image load statistics:');
+          logImageStats();
+        }
+      }, 2000);
+    });
+  </script>
 </body>
 </html>
