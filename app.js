@@ -32,7 +32,7 @@ function spriteHtml(poke, className = '', useLarge = false) {
 function makeTypeBadge(type, small = false) {
   const el = document.createElement('img');
   const typeId = TYPE_ICON_MAP[type.toLowerCase()];
-  el.src = `sprites/sprites/types/generation-viii/sword-shield/${typeId}.png`;
+  el.src = `/sprites/sprites/types/generation-viii/sword-shield/${typeId}.png`;
   el.alt = type;
   el.className = `type-badge-img${small ? ' type-badge-sm' : ''}`;
   el.onerror = function() {
@@ -225,9 +225,11 @@ function renderMoveset(pokemon) {
 }
 
 function getCategoryIcon(category) {
-  if (category === 'physical') return 'sprites/sprites/items/red-shard.png';
-  if (category === 'special') return 'sprites/sprites/items/blue-shard.png';
-  if (category === 'status') return 'sprites/sprites/items/green-shard.png';
+  if (category === 'physical') return '/sprites/sprites/items/red-shard.png';
+  if (category === 'special') return '/sprites/sprites/items/blue-shard.png';
+  if (category === 'status') return '/sprites/sprites/items/green-shard.png';
+  return '/sprites/sprites/items/yellow-shard.png';
+}
   return 'sprites/sprites/items/green-shard.png';
 }
 
@@ -554,7 +556,7 @@ function renderTeamSlots() {
     if (!poke) { 
       slotEl.className = 'team-slot empty'; 
       slotEl.innerHTML = `
-        <img src="sprites/sprites/items/poke-ball.png" class="empty-pokeball" alt="Empty" />
+        <img src="/sprites/sprites/items/poke-ball.png" class="empty-pokeball" alt="Empty" />
         <span class="empty-text">Empty Slot</span>`; 
       slotEl.style.cursor = 'default';
       slotEl.onclick = null;
@@ -673,7 +675,7 @@ function renderTeamRecommendations() {
     const card = document.createElement('div');
     card.className = 'rec-card';
     card.title     = `Click to look up ${candidate.name}`;
-    const local  = `sprites/sprites/pokemon/${candidate.id}.png`;
+    const local  = `/sprites/sprites/pokemon/${candidate.id}.png`;
     const cdn    = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${candidate.id}.png`;
     const inTeam = state.team.some(p => p && p.name === candidate.name);
     const reasonText = reasons.map(r => r.text).join(', ');

@@ -28,9 +28,9 @@ async function fetchPokemon(nameOrId) {
   const data = {
     id:             raw.id,
     name:           raw.name,
-    sprite:         `sprites/sprites/pokemon/${raw.id}.png`,
-    shiny:          `sprites/sprites/pokemon/shiny/${raw.id}.png`,
-    artwork:        `sprites/sprites/pokemon/other/official-artwork/${raw.id}.png`,
+    sprite:         `/sprites/sprites/pokemon/${raw.id}.png`,
+    shiny:          `/sprites/sprites/pokemon/shiny/${raw.id}.png`,
+    artwork:        `/sprites/sprites/pokemon/other/official-artwork/${raw.id}.png`,
     spriteFallback: raw.sprites.front_default || '',
     types:          raw.types.map(t => t.type.name),
     abilities:      raw.abilities.map(a => ({

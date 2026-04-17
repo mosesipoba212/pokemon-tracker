@@ -7,7 +7,7 @@ const ITEMS = {
   // ── CHOICE ITEMS ──
   "choice-scarf": {
     name: "Choice Scarf",
-    image: "sprites/sprites/items/choice-scarf.png",
+    image: "/sprites/sprites/items/choice-scarf.png",
     category: "speed",
     effect: "Boosts Speed by 50% but locks into one move",
     description: "Essential for revenge killing and speed control. Best on fast attackers or slow threats that need to outspeed.",
@@ -19,7 +19,7 @@ const ITEMS = {
   },
   "choice-band": {
     name: "Choice Band",
-    image: "sprites/sprites/items/choice-band.png",
+    image: "/sprites/sprites/items/choice-band.png",
     category: "damage",
     effect: "Boosts Attack by 50% but locks into one move",
     description: "Massive physical power boost. Best on strong physical attackers with good coverage.",
@@ -31,7 +31,7 @@ const ITEMS = {
   },
   "choice-specs": {
     name: "Choice Specs",
-    image: "sprites/sprites/items/choice-specs.png",
+    image: "/sprites/sprites/items/choice-specs.png",
     category: "damage",
     effect: "Boosts Sp. Atk by 50% but locks into one move",
     description: "Massive special power boost. Best on strong special attackers with wide coverage.",
@@ -45,7 +45,7 @@ const ITEMS = {
   // ── POWER ITEMS ──
   "life-orb": {
     name: "Life Orb",
-    image: "sprites/sprites/items/life-orb.png",
+    image: "/sprites/sprites/items/life-orb.png",
     category: "damage",
     effect: "Boosts all moves by 30% but takes 10% HP per attack",
     description: "Flexible damage boost without move-locking. Best on mixed attackers or versatile sweepers.",
@@ -57,7 +57,7 @@ const ITEMS = {
   },
   "expert-belt": {
     name: "Expert Belt",
-    image: "sprites/sprites/items/expert-belt.png",
+    image: "/sprites/sprites/items/expert-belt.png",
     category: "damage",
     effect: "Boosts super-effective moves by 20%",
     description: "Rewards good coverage. Best on Pokémon with diverse move pools.",
@@ -68,7 +68,7 @@ const ITEMS = {
   },
   "weakness-policy": {
     name: "Weakness Policy",
-    image: "sprites/sprites/items/weakness-policy.png",
+    image: "/sprites/sprites/items/weakness-policy.png",
     category: "setup",
     effect: "Sharply boosts Attack and Sp. Atk when hit super-effectively",
     description: "High-risk setup tool. Best on bulky attackers that can survive a super-effective hit.",
@@ -81,7 +81,7 @@ const ITEMS = {
   // ── DEFENSIVE ITEMS ──
   "leftovers": {
     name: "Leftovers",
-    image: "sprites/sprites/items/leftovers.png",
+    image: "/sprites/sprites/items/leftovers.png",
     category: "recovery",
     effect: "Restores 1/16 of max HP every turn",
     description: "Reliable passive recovery. Best on defensive Pokémon and stall builds.",
@@ -92,7 +92,7 @@ const ITEMS = {
   },
   "assault-vest": {
     name: "Assault Vest",
-    image: "sprites/sprites/items/assault-vest.png",
+    image: "/sprites/sprites/items/assault-vest.png",
     category: "bulk",
     effect: "Boosts Sp. Def by 50% but prevents status moves",
     description: "Massive special bulk. Best on bulky attackers facing special threats.",
@@ -104,7 +104,7 @@ const ITEMS = {
   },
   "rocky-helmet": {
     name: "Rocky Helmet",
-    image: "sprites/sprites/items/rocky-helmet.png",
+    image: "/sprites/sprites/items/rocky-helmet.png",
     category: "bulk",
     effect: "Damages attackers by 1/6 of their max HP on contact",
     description: "Punishes physical attackers. Best on physical walls that force switches.",
@@ -115,7 +115,7 @@ const ITEMS = {
   },
   "eviolite": {
     name: "Eviolite",
-    image: "sprites/sprites/items/eviolite.png",
+    image: "/sprites/sprites/items/eviolite.png",
     category: "bulk",
     effect: "Boosts Defense and Sp. Def by 50% on unevolved Pokémon",
     description: "Makes unevolved Pokémon incredibly bulky. Only works on non-final evolutions.",
@@ -130,7 +130,7 @@ const ITEMS = {
   // ── SURVIVAL ITEMS ──
   "focus-sash": {
     name: "Focus Sash",
-    image: "sprites/sprites/items/focus-sash.png",
+    image: "/sprites/sprites/items/focus-sash.png",
     category: "survival",
     effect: "Guarantees survival of one OHKO at full HP",
     description: "Essential for frail setup sweepers and suicide leads. Vulnerable to hazards.",
@@ -143,7 +143,7 @@ const ITEMS = {
   },
   "sitrus-berry": {
     name: "Sitrus Berry",
-    image: "sprites/sprites/items/sitrus-berry.png",
+    image: "/sprites/sprites/items/sitrus-berry.png",
     category: "recovery",
     effect: "Restores 25% HP when HP drops below 50%",
     description: "One-time bulk boost. Good on Pokémon that need extra survivability.",
@@ -157,7 +157,7 @@ const ITEMS = {
   // ── UTILITY ITEMS ──
   "heavy-duty-boots": {
     name: "Heavy-Duty Boots",
-    image: "sprites/sprites/items/heavy-duty-boots.png",
+    image: "/sprites/sprites/items/heavy-duty-boots.png",
     category: "utility",
     effect: "Grants immunity to entry hazards",
     description: "Critical for hazard-weak Pokémon. Best on 4× Stealth Rock weak types or fragile pivots.",
@@ -168,7 +168,7 @@ const ITEMS = {
   },
   "lum-berry": {
     name: "Lum Berry",
-    image: "sprites/sprites/items/lum-berry.png",
+    image: "/sprites/sprites/items/lum-berry.png",
     category: "utility",
     effect: "Cures any status condition once",
     description: "One-time status immunity. Good anti-status tech or for setup sweepers.",
@@ -180,7 +180,7 @@ const ITEMS = {
   },
   "air-balloon": {
     name: "Air Balloon",
-    image: "sprites/sprites/items/air-balloon.png",
+    image: "/sprites/sprites/items/air-balloon.png",
     category: "utility",
     effect: "Grants Ground immunity until hit",
     description: "Temporary Ground immunity. Best on slow Ground-weak Pokémon.",
@@ -194,7 +194,7 @@ const ITEMS = {
   // ── BERRIES ──
   "wiki-berry": {
     name: "Wiki Berry",
-    image: "sprites/sprites/items/berries/wiki.png",
+    image: "/sprites/sprites/items/berries/wiki.png",
     category: "recovery",
     effect: "Restores 33% HP at 25% HP (dislikes spicy)",
     description: "Strong recovery berry for physically defensive Pokémon.",
@@ -206,7 +206,7 @@ const ITEMS = {
   },
   "iapapa-berry": {
     name: "Iapapa Berry",
-    image: "sprites/sprites/items/berries/iapapa.png",
+    image: "/sprites/sprites/items/berries/iapapa.png",
     category: "recovery",
     effect: "Restores 33% HP at 25% HP (dislikes sour)",
     description: "Strong recovery berry for specially defensive Pokémon.",
@@ -222,4 +222,4 @@ const ITEMS = {
 const HAZARD_WEAK_TYPES = ["fire", "flying", "bug", "ice"];
 
 // Item sprite fallback
-const ITEM_SPRITE_FALLBACK = "sprites/sprites/items/gen5/poke-ball.png";
+const ITEM_SPRITE_FALLBACK = "/sprites/sprites/items/gen5/poke-ball.png";
