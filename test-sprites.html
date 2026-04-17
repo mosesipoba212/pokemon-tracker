@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sprite Test</title>
+</head>
+<body>
+    <h1>Testing Sprite Paths</h1>
+    <p>If you see images below, sprites are working:</p>
+    
+    <h2>Absolute Path Test</h2>
+    <img src="/sprites/sprites/items/poke-ball.png" alt="Poke Ball (absolute)" style="width:50px;">
+    
+    <h2>JavaScript Path Test</h2>
+    <img id="jsTest" alt="JS loaded" style="width:50px;">
+    
+    <script>
+        document.getElementById('jsTest').src = '/sprites/sprites/items/master-ball.png';
+        
+        // Log all image load errors
+        document.querySelectorAll('img').forEach(img => {
+            img.onerror = function() {
+                console.error('Failed to load:', this.src);
+            };
+            img.onload = function() {
+                console.log('Successfully loaded:', this.src);
+            };
+        });
+    </script>
+</body>
+</html>

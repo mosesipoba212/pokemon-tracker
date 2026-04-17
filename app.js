@@ -7,6 +7,13 @@
    ========================================================= */
 'use strict';
 
+// Debug logging for image loading issues in production
+window.addEventListener('error', (e) => {
+  if (e.target.tagName === 'IMG') {
+    console.error('Image failed to load:', e.target.src, '| Alt:', e.target.alt);
+  }
+}, true);
+
 /* =========================================================
    1. APP STATE
    ========================================================= */
@@ -49,7 +56,7 @@ function makeTypeBadge(type, small = false) {
 function typeBadgeHtml(type, small = false) {
   const typeId = TYPE_ICON_MAP[type.toLowerCase()];
   const sizeClass = small ? ' type-badge-sm' : '';
-  return `<img src="sprites/sprites/types/generation-viii/sword-shield/${typeId}.png" 
+  return `<img src="/sprites/sprites/types/generation-viii/sword-shield/${typeId}.png" 
     alt="${type}" 
     class="type-badge-img${sizeClass}" 
     onerror="this.outerHTML='<span class=\'type-badge type-${type}${small ? ' type-sm' : ''}\'>${type}</span>'" />`;
@@ -229,8 +236,6 @@ function getCategoryIcon(category) {
   if (category === 'special') return '/sprites/sprites/items/blue-shard.png';
   if (category === 'status') return '/sprites/sprites/items/green-shard.png';
   return '/sprites/sprites/items/yellow-shard.png';
-}
-  return 'sprites/sprites/items/green-shard.png';
 }
 
 function getTypeColor(type) {
